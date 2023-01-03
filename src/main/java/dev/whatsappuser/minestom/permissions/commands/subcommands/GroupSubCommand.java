@@ -2,6 +2,7 @@ package dev.whatsappuser.minestom.permissions.commands.subcommands;
 
 import dev.whatsappuser.minestom.permissions.PermissionBootstrap;
 import dev.whatsappuser.minestom.permissions.PermissionPool;
+import dev.whatsappuser.minestom.permissions.config.MessageConfig;
 import dev.whatsappuser.minestom.permissions.group.PermissionGroup;
 import dev.whatsappuser.minestom.permissions.player.PermissionUser;
 import net.kyori.adventure.text.Component;
@@ -153,19 +154,30 @@ public class GroupSubCommand extends Command {
         final String groupName = context.get("groupName");
 
         if (! checkPermissions(sender, "mperms.command")) {
-            sender.sendMessage(Component.text("You are not authorized to use this command.", NamedTextColor.RED));
+            sender.sendMessage(MessageConfig.HAS_NO_PERMISSION);
             return;
         }
 
         if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
-            sender.sendMessage(Component.text("the group " + groupName + " doesn't exist.", NamedTextColor.RED));
+            sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
             return;
         }
 
         sender.sendMessage("");
         PermissionGroup group = PermissionBootstrap.getBootstrap().getPermissionPool().getGroup(groupName);
-        sender.sendMessage(Component.text("§7PermissionGroup@" + group.getColorCode() + group.getName()));
-        sender.sendMessage(Component.text("§7Prefix §8» §c" + group.getPrefix()));
+        sender.sendMessage(MessageConfig.GROUP_INFORMATION.replace("%group%", group.getColorCode() + group.getName()));
+        for (String line : MessageConfig.GROUP_OPTION_INFORMATION) {
+            line = line.replace("%group_prefix%", group.getPrefix())
+                    .replace("%group_display%", group.getDisplay())
+                    .replace("%group_suffix%", group.getSuffix())
+                    .replace("%group_chatFormat%", group.getChatFormat())
+                    .replace("%group_id%", String.valueOf(group.getId()))
+                    .replace("%group_priority%", String.valueOf(group.getPriority()))
+                    .replace("%group_isdefault%", String.valueOf(group.isDefault()))
+                    .replace("%permissions%", String.join("§7, §c", group.getPermissions()));
+            sender.sendMessage(line);
+        }
+        /*sender.sendMessage(Component.text("§7Prefix §8» §c" + group.getPrefix()));
         sender.sendMessage(Component.text("§7Display §8» §c" + group.getDisplay()));
         sender.sendMessage(Component.text("§7Suffix §8» §c" + (group.getSuffix().isEmpty() ? group.getSuffix() : "none")));
         sender.sendMessage(Component.text("§7ChatFormat §8» " + group.getChatFormat()));
@@ -176,7 +188,7 @@ public class GroupSubCommand extends Command {
             sender.sendMessage(Component.text("§7Permissions §8» §cnone"));
         } else {
             sender.sendMessage(Component.text("§7Permissions §8» §c" + String.join("§7, §c", group.getPermissions())));
-        }
+        }*/
     }
 
     public final boolean checkPermissions(CommandSender sender, String permission) {
