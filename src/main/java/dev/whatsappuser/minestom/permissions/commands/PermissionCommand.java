@@ -3,8 +3,9 @@ package dev.whatsappuser.minestom.permissions.commands;
 import dev.whatsappuser.minestom.permissions.commands.subcommands.GroupSubCommand;
 import dev.whatsappuser.minestom.permissions.commands.subcommands.GuiSubCommand;
 import dev.whatsappuser.minestom.permissions.commands.subcommands.PlayerSubCommand;
-import dev.whatsappuser.minestom.permissions.commands.subcommands.ReloadSubCommand;
+import dev.whatsappuser.minestom.permissions.config.MessageConfig;
 import net.kyori.adventure.text.Component;
+import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.entity.Player;
 
@@ -18,8 +19,10 @@ public class PermissionCommand extends Command {
         super("mperms");
 
         setCondition((sender, commandString) -> {
-            if(sender instanceof Player player)
-                return player.hasPermission("mperms.command");
+            if(!checkPermissions(sender, "mperms.command")) {
+                sender.sendMessage(MessageConfig.HAS_NO_PERMISSION);
+                return false;
+            }
             return true;
         });
 
@@ -35,13 +38,17 @@ public class PermissionCommand extends Command {
             sender.sendMessage(Component.text("/mperms group [name] setPrefix [prefix]"));
             sender.sendMessage(Component.text("/mperms group [name] setDisplay [display]"));
             sender.sendMessage(Component.text("/mperms group [name] setSuffix [suffix]"));
-            sender.sendMessage(Component.text("/mperms reload"));
         });
 
         addSubcommand(new PlayerSubCommand());
         addSubcommand(new GroupSubCommand());
-        addSubcommand(new ReloadSubCommand());
         addSubcommand(new GuiSubCommand());
 
+    }
+
+    public final boolean checkPermissions(CommandSender sender, String permission) {
+        if(sender instanceof Player player)
+            return player.hasPermission(permission);
+        return true;
     }
 }
