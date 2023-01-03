@@ -1,6 +1,7 @@
 package dev.whatsappuser.minestom.permissions;
 
 import dev.whatsappuser.minestom.permissions.commands.PermissionCommand;
+import dev.whatsappuser.minestom.permissions.config.MessageConfig;
 import dev.whatsappuser.minestom.permissions.config.PermissionsConfig;
 import dev.whatsappuser.minestom.permissions.group.PermissionGroup;
 import dev.whatsappuser.minestom.permissions.listener.ChatListener;
@@ -25,6 +26,7 @@ public class PermissionBootstrap extends Extension {
 
     private static PermissionBootstrap BOOTSTRAP;
     private PermissionsConfig config;
+    private MessageConfig messageConfig;
     private IDatabase database;
     private PermissionPool permissionPool;
 
@@ -36,6 +38,9 @@ public class PermissionBootstrap extends Extension {
 
         this.config = new PermissionsConfig();
         this.config.loadConfig();
+
+        this.messageConfig = new MessageConfig();
+        this.messageConfig.loadConfig();
 
         loadDatabase();
 
