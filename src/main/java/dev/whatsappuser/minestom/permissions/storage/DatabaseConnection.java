@@ -120,6 +120,11 @@ public class DatabaseConnection implements IDatabase {
     }
 
     @Override
+    public void loadPlayers() {
+        //TODO: loadPlayers impl
+    }
+
+    @Override
     public PermissionUser loadPlayer(String name) {
         Document document = getUsers().find(createUserFilter(name)).first();
 
@@ -211,6 +216,11 @@ public class DatabaseConnection implements IDatabase {
     }
 
     @Override
+    public void savePlayers() {
+        //TODO: savePlayers impl
+    }
+
+    @Override
     public void saveGroup(PermissionGroup group) {
         Document document = getGroups().find(createGroupFilter(group.getName())).first();
 
@@ -221,6 +231,11 @@ public class DatabaseConnection implements IDatabase {
         else
             getGroups().updateOne(new BasicDBObject("$set", new BasicDBObject("name", group.getName())), document);
 
+    }
+
+    @Override
+    public void saveGroups() {
+        //TODO: saveGroups impl
     }
 
     @Override

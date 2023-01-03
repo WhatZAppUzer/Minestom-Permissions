@@ -26,6 +26,8 @@ public interface IDatabase {
 
     PermissionUser loadPlayer(UUID uuid);
 
+    void loadPlayers();
+
     PermissionUser loadPlayer(String name);
 
     void createPlayer(UUID uuid);
@@ -42,7 +44,11 @@ public interface IDatabase {
 
     void savePlayer(PermissionUser user);
 
+    void savePlayers();
+
     void saveGroup(PermissionGroup group);
+
+    void saveGroups();
 
     PermissionGroup loadGroup(String name);
 

@@ -1,12 +1,13 @@
 package dev.whatsappuser.minestom.permissions.storage;
 
 import com.google.gson.reflect.TypeToken;
-import dev.whatsappuser.lib.config.JsonConfiguration;
+import dev.whatsappuser.minestom.lib.configuration.JsonConfiguration;
 import dev.whatsappuser.minestom.permissions.PermissionPool;
 import dev.whatsappuser.minestom.permissions.group.PermissionGroup;
 import dev.whatsappuser.minestom.permissions.player.PermissionUser;
 import dev.whatsappuser.minestom.permissions.utilities.FileUtil;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -112,6 +113,12 @@ public class JsonDatabase implements IDatabase {
     }
 
     @Override
+    public void loadPlayers() {
+        for (Player onlinePlayer : MinecraftServer.getConnectionManager().getOnlinePlayers())
+            loadPlayer(onlinePlayer.getUuid());
+    }
+
+    @Override
     public PermissionUser loadPlayer(String name) {
         throw new UnsupportedOperationException("this method is not supported, use: loadPlayer(UUID)");
     }
@@ -129,7 +136,7 @@ public class JsonDatabase implements IDatabase {
         this.userDocument = JsonConfiguration.loadDocument(file);
         PermissionUser user = new PermissionUser(uuid, MinecraftServer.getConnectionManager().getPlayer(uuid).getUsername(), PermissionPool.DEFAULT, new HashSet<>());
         this.userDocument.append("name", user.getName()).append("groupName", user.getGroup().getName()).append("permissions", user.getPermissions());
-        this.userDocument.saveAsConfig(MinecraftServer.getExtensionManager().getExtensionFolder() + "/Permissions/Users/" + uuid.toString() + ".json");
+        this.userDocument.save(MinecraftServer.getExtensionManager().getExtensionFolder() + "/Permissions/Users/" + uuid.toString() + ".json");
     }
 
     @Override
@@ -153,7 +160,7 @@ public class JsonDatabase implements IDatabase {
                 .append("id", group.getId())
                 .append("default", group.isDefault());
         this.groupDocument.append(group.getName(), groupDoc);
-        this.groupDocument.saveAsConfig(this.groupFile);
+        this.groupDocument.save(this.groupFile);
     }
 
     @Override
@@ -162,7 +169,7 @@ public class JsonDatabase implements IDatabase {
             return;
 
         getAllLoadedGroups().remove(getGroup(group));
-        this.groupDocument.remove(group).saveAsConfig(this.groupFile);
+        this.groupDocument.remove(group).save(this.groupFile);
     }
 
     @Override
@@ -196,7 +203,13 @@ public class JsonDatabase implements IDatabase {
         this.userDocument.append("name", name);
         this.userDocument.append("groupName", groupName);
         this.userDocument.append("permissions", permissions);
-        this.userDocument.saveAsConfig(file);
+        this.userDocument.save(file);
+    }
+
+    @Override
+    public void savePlayers() {
+        for (Player onlinePlayer : MinecraftServer.getConnectionManager().getOnlinePlayers())
+            savePlayer(getPlayer(onlinePlayer.getUuid()));
     }
 
     @Override
@@ -216,17 +229,27 @@ public class JsonDatabase implements IDatabase {
 
         groupDoc.append("prefix", prefix).append("display", display).append("suffix", suffix)
                 .append("colorCode", colorCode).append("chatFormat", chatFormat).append("permissions", permissions).append("id", id).append("priority", priority).append("default", isDefault);
+        if(name == null) return;
         this.groupDocument.append(name, groupDoc);
-        this.groupDocument.saveAsConfig(this.groupFile);
+        this.groupDocument.save(this.groupFile);
+    }
+
+    @Override
+    public void saveGroups() {
+        for (PermissionGroup allLoadedGroup : this.getAllLoadedGroups()) {
+            saveGroup(allLoadedGroup);
+        }
     }
 
     @Override
     public PermissionGroup loadGroup(String name) {
         var document = this.groupDocument.getDocument(name);
-        return new PermissionGroup(name, document.getString("prefix"), document.getString("display"), document.getString("suffix")
+        var group = new PermissionGroup(name, document.getString("prefix"), document.getString("display"), document.getString("suffix")
                 , document.getString("colorCode"), document.getString("chatFormat")
                 , document.getObject("permissions", new TypeToken<Set<String>>() {
         }.getType()), document.getInt("id"), document.getInt("priority"), document.getBoolean("default"));
+        getAllLoadedGroups().add(group);
+        return group;
     }
 
     @Override
