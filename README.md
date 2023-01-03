@@ -13,3 +13,4 @@ from the console with "mperms user <username> perm add mperms.command"
 - [ ] customizable messages
 - [ ] mongodb support(in progress)
 - [ ] permissions tabcomplete
+- [ ] correct arrangement with priority id in the tablist
