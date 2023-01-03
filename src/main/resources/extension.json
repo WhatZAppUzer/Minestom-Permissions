@@ -1,0 +1,6 @@
+{
+  "entrypoint": "dev.whatsappuser.minestom.permissions.PermissionBootstrap",
+  "name": "MPermissions",
+  "version": "1.0.2",
+  "author": "WhatsAppUser"
+}

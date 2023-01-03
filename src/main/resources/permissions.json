@@ -1,0 +1,13 @@
+{
+  "default": {
+    "prefix": "&7",
+    "display": "&7",
+    "suffix": "",
+    "permissions": [
+      "default.permissions"
+    ],
+    "priority": 10,
+    "id": 0,
+    "default": true
+  }
+}
