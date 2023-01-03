@@ -72,7 +72,9 @@ public class PermissionPool {
     }
 
     public void updateGroup(PermissionGroup group) {
+        PermissionBootstrap.getBootstrap().getDatabase().saveGroup(group);
         PermissionBootstrap.getBootstrap().getDatabase().getAllLoadedGroups().remove(group);
+        PermissionBootstrap.getBootstrap().getDatabase().loadGroup(group.getName());
         PermissionBootstrap.getBootstrap().getDatabase().getAllLoadedGroups().add(group);
         for (PermissionUser cachedUser : PermissionBootstrap.getBootstrap().getDatabase().getCachedUsers()) {
             if(cachedUser.getGroup().equals(group)) {
@@ -80,20 +82,6 @@ public class PermissionPool {
                 assert player != null;
                 updatePlayer(player);
             }
-        }
-    }
-
-    public void reload() {
-        var database = PermissionBootstrap.getBootstrap().getDatabase();
-        for (PermissionGroup allLoadedGroup : database.getAllLoadedGroups()) {
-            updateGroup(allLoadedGroup);
-            database.saveGroup(allLoadedGroup);
-            database.loadGroups();
-        }
-        for (PermissionUser cachedUser : database.getCachedUsers()) {
-            updatePlayer(Objects.requireNonNull(MinecraftServer.getConnectionManager().getPlayer(cachedUser.getUniqueId())));
-            database.savePlayer(cachedUser);
-            database.loadPlayer(cachedUser.getUniqueId());
         }
     }
 
