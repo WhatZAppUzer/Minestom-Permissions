@@ -1,11 +1,10 @@
 package dev.whatsappuser.minestom.permissions.config;
 
-import dev.whatsappuser.lib.config.JsonConfiguration;
+import dev.whatsappuser.minestom.lib.configuration.JsonConfiguration;
 import dev.whatsappuser.minestom.permissions.PermissionBootstrap;
 import dev.whatsappuser.minestom.permissions.utilities.FileUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import net.minestom.server.MinecraftServer;
 
 import java.io.File;
@@ -53,7 +52,7 @@ public class PermissionsConfig {
         if(!document.contains("mongodb")) {
             document.append("useStorage", false);
             document.append("mongodb", new MongoDB("localhost", "root", "rootPassword", "permissions", "admin", 27017, false, true));
-            document.saveAsConfig(file);
+            document.save(file);
         } else {
             this.useStorage = document.getBoolean("useStorage");
             this.mongoDB = document.getObject("mongodb", MongoDB.class);
