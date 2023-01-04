@@ -33,6 +33,10 @@ public class MessageConfig {
     public static String GROUP_IS_ALREADY_IN_USE;
     public static String GROUP_HAS_ALREADY_PERMISSION;
     public static String GROUP_HAS_NO_PERMISSION;
+    public static String GROUP_PRIORITY_CHANGED;
+    public static String GROUP_PREFIX_CHANGED;
+    public static String GROUP_DISPLAY_CHANGED;
+    public static String GROUP_SUFFIX_CHANGED;
     public static String GROUP_INFORMATION;
     public static List<String> GROUP_OPTION_INFORMATION;
 
@@ -79,6 +83,10 @@ public class MessageConfig {
         GROUP_IS_ALREADY_IN_USE = group.getString("already-in-use");
         GROUP_HAS_ALREADY_PERMISSION = group.getString("has-already-permission");
         GROUP_HAS_NO_PERMISSION = group.getString("has-no-permission");
+        GROUP_PRIORITY_CHANGED = group.getString("priority-changed");
+        GROUP_PREFIX_CHANGED = group.getString("prefix-changed");
+        GROUP_DISPLAY_CHANGED = group.getString("display-changed");
+        GROUP_SUFFIX_CHANGED = group.getString("suffix-changed");
         GROUP_INFORMATION = group.getString("information");
         GROUP_OPTION_INFORMATION = group.getObject("option-information", new TypeToken<List<String>>() {}.getType());
     }
@@ -101,6 +109,10 @@ public class MessageConfig {
             group.append("already-in-use", "§cThis group %group% is already in use");
             group.append("has-already-permission", "§cThe group %group% §chas already the permission: %permission%");
             group.append("has-no-permission", "The group %group% §cdoesn't have the permission: %permission%");
+            group.append("priority-changed", "§aPriority from group %group% §awas changed to §e%priority%");
+            group.append("prefix-changed", "§aPrefix from group %group% §awas changed to %prefix%");
+            group.append("display-changed", "§aDisplay from group %group% §awas changed to %display%");
+            group.append("suffix-changed", "§aSuffix from group %group% §awas changed to %suffix%");
             group.append("information", "§7PermissionGroup@%group%");
 
             List<String> options = new ArrayList<>();
