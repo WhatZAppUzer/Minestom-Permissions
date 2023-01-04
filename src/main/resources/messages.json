@@ -1,0 +1,34 @@
+{
+  "messages": {
+    "missing-permissions": "§cYou are not authorized to use this command.",
+    "reload-successfully": "§aSuccessfully reloaded all permissions.",
+    "only-number": "§cYou must enter a number",
+    "group": {
+      "not-exists": "§cthe group %group% doesn't exist.",
+      "successfully-deleted": "§aSuccessfully %group% deleted.",
+      "successfully-created": "§aYou have created %group%.",
+      "successfully-permission-add": "§aAdded the permission %permission% to %group%",
+      "successfully-permission-remove": "§aRemoved the permission %permission% from %group%",
+      "already-in-use": "§cThis group %group% §cis already in use",
+      "has-already-permission": "§cThe group %group% §chas already the permission: %permission%",
+      "has-no-permission": "§cThe group %group% §cdoesn't have the permission: %permission%",
+      "priority-changed": "§aPriority from group %group% §awas changed to §e%priority%",
+      "prefix-changed": "§aPrefix from group %group% §awas changed to %prefix%",
+      "display-changed": "§aDisplay from group %group% §awas changed to %display%",
+      "suffix-changed": "§aSuffix from group %group% §awas changed to %suffix%",
+      "information": "§7PermissionGroup@%group%",
+      "option-information": [
+        "§7Prefix §8» %group_prefix%",
+        "§7Display §8» %group_display%",
+        "§7Suffix §8» %group_suffix%",
+        "§7ChatFormat §8» %group_chatFormat%",
+        "§7Id §8» %group_id%",
+        "§7Priority §8» %group_priority%",
+        "§7Default §8» %group_isdefault%",
+        "§7Permissions §8» §c%permissions%"
+      ]
+    },
+    "user": {
+    }
+  }
+}
