@@ -99,15 +99,14 @@ public class JsonDatabase implements IDatabase {
         if (! FileUtil.doesFileExist(MinecraftServer.getExtensionManager().getExtensionFolder() + "/Permissions/Users/" + uuid.toString() + ".json"))
             createPlayer(uuid);
 
-        this.userDocument = JsonConfiguration.loadDocument(FileUtil.getFile(MinecraftServer.getExtensionManager().getExtensionFolder() + "/Permissions/Users/" + uuid.toString() + ".json"));
+        this.userDocument = JsonConfiguration.loadDocument(FileUtil.getFile(MinecraftServer.getExtensionManager().getExtensionFolder() + "/Permissions/Users/" + uuid + ".json"));
 
         var name = this.userDocument.getString("name");
         var groupName = this.userDocument.getString("groupName");
         Set<String> permissions = this.userDocument.getObject("permissions", new TypeToken<Set<String>>() {
         }.getType());
         PermissionUser permissionPlayer = new PermissionUser(uuid, name, getGroup(groupName), permissions);
-        if(this.permissionUsers.contains(permissionPlayer))
-            this.permissionUsers.remove(permissionPlayer);
+        this.permissionUsers.remove(permissionPlayer);
         this.permissionUsers.add(permissionPlayer);
         return permissionPlayer;
     }
@@ -136,7 +135,7 @@ public class JsonDatabase implements IDatabase {
         this.userDocument = JsonConfiguration.loadDocument(file);
         PermissionUser user = new PermissionUser(uuid, MinecraftServer.getConnectionManager().getPlayer(uuid).getUsername(), PermissionPool.DEFAULT, new HashSet<>());
         this.userDocument.append("name", user.getName()).append("groupName", user.getGroup().getName()).append("permissions", user.getPermissions());
-        this.userDocument.save(MinecraftServer.getExtensionManager().getExtensionFolder() + "/Permissions/Users/" + uuid.toString() + ".json");
+        this.userDocument.save(MinecraftServer.getExtensionManager().getExtensionFolder() + "/Permissions/Users/" + uuid + ".json");
     }
 
     @Override
@@ -189,6 +188,15 @@ public class JsonDatabase implements IDatabase {
     @Override
     public Set<PermissionGroup> getAllLoadedGroups() {
         return this.permissionGroups;
+    }
+
+    @Override
+    public void reloadGroup(PermissionGroup group) {
+        this.permissionGroups.remove(group);
+
+        saveGroup(group);
+        this.permissionGroups.add(loadGroup(group.getName()));
+
     }
 
     @Override
@@ -270,8 +278,7 @@ public class JsonDatabase implements IDatabase {
     public void loadGroups() {
         for (String key : this.groupDocument.keys()) {
             var group = loadGroup(key);
-            if(this.permissionGroups.contains(group))
-                this.permissionGroups.remove(group);
+            this.permissionGroups.remove(group);
             this.permissionGroups.add(group);
         }
     }

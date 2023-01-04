@@ -42,6 +42,8 @@ public interface IDatabase {
 
     Set<PermissionGroup> getAllLoadedGroups();
 
+    void reloadGroup(PermissionGroup group);
+
     void savePlayer(PermissionUser user);
 
     void savePlayers();
