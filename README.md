@@ -14,3 +14,9 @@ from the console with "mperms user <username> perm add mperms.command"
 - [ ] mongodb support(in progress)
 - [ ] permissions tabcomplete
 - [ ] correct arrangement with priority id in the tablist
+- [x] '*' permissions added
+
+## Permissions
+- MainCommand (/mperms) : 'mpermission.command'
+- UserSubCommand (/mperms user) : 'mpermission.command.user'
+- GroupSubCommand (/mperms group) : 'mpermission.command.group'
