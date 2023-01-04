@@ -1,5 +1,7 @@
 package dev.whatsappuser.minestom.permissions.commands.subcommands;
 
+import dev.whatsappuser.minestom.lib.command.Command;
+import dev.whatsappuser.minestom.lib.permissions.PermissionProvider;
 import dev.whatsappuser.minestom.permissions.PermissionBootstrap;
 import dev.whatsappuser.minestom.permissions.PermissionPool;
 import dev.whatsappuser.minestom.permissions.group.PermissionGroup;
@@ -7,7 +9,6 @@ import dev.whatsappuser.minestom.permissions.player.PermissionUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.command.CommandSender;
-import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.CommandContext;
 import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.command.builder.arguments.ArgumentWord;
@@ -24,8 +25,10 @@ import static net.minestom.server.command.builder.arguments.ArgumentType.Word;
  */
 
 public class PlayerSubCommand extends Command {
-    public PlayerSubCommand() {
-        super("user");
+    public PlayerSubCommand(@NotNull PermissionProvider provider) {
+        super(provider, "user");
+
+        setPermission("mpermission.command.user");
 
         ArgumentEntity players = ArgumentType.Entity("player").onlyPlayers(true).singleEntity(true);
         ArgumentWord action = Word("action").from("add", "remove");
@@ -47,11 +50,6 @@ public class PlayerSubCommand extends Command {
         final EntityFinder target = context.get("player");
         final String group = context.get("groupName");
         final Player player = target.findFirstPlayer(sender);
-
-        if(!checkPermissions(sender, "mperms.command")) {
-            sender.sendMessage(Component.text("You are not authorized to use this command.", NamedTextColor.RED));
-            return;
-        }
 
         if(player == null) {
             sender.sendMessage(Component.text("The user was unable to be found", NamedTextColor.RED));
@@ -99,11 +97,6 @@ public class PlayerSubCommand extends Command {
 
         final Player player = target.findFirstPlayer(sender);
 
-        if (!checkPermissions(sender, "mperms.command")) {
-            sender.sendMessage(Component.text("You are not authorized to use this command.", NamedTextColor.RED));
-            return;
-        }
-
         if(player == null) {
             sender.sendMessage(Component.text("The user was unable to be found", NamedTextColor.RED));
             return;
@@ -130,11 +123,6 @@ public class PlayerSubCommand extends Command {
         final EntityFinder target = context.get("player");
         Player targetPlayer = target.findFirstPlayer(sender);
 
-        if (!checkPermissions(sender, "mperms.command")) {
-            sender.sendMessage(Component.text("You are not authorized to use this command.", NamedTextColor.RED));
-            return;
-        }
-
         if(targetPlayer == null) {
             sender.sendMessage(Component.text("The user was unable to be found", NamedTextColor.RED));
             return;
@@ -148,11 +136,5 @@ public class PlayerSubCommand extends Command {
         } else {
             sender.sendMessage(Component.text("§ePermissions §8» §c'-'"));
         }
-    }
-
-    public final boolean checkPermissions(CommandSender sender, String permission) {
-        if(sender instanceof Player player)
-            return player.hasPermission(permission);
-        return true;
     }
 }

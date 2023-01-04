@@ -1,17 +1,14 @@
 package dev.whatsappuser.minestom.permissions.commands.subcommands;
 
+import dev.whatsappuser.minestom.lib.command.Command;
+import dev.whatsappuser.minestom.lib.permissions.PermissionProvider;
 import dev.whatsappuser.minestom.permissions.PermissionBootstrap;
 import dev.whatsappuser.minestom.permissions.PermissionPool;
 import dev.whatsappuser.minestom.permissions.config.MessageConfig;
 import dev.whatsappuser.minestom.permissions.group.PermissionGroup;
-import dev.whatsappuser.minestom.permissions.player.PermissionUser;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.command.CommandSender;
-import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.CommandContext;
 import net.minestom.server.command.builder.arguments.ArgumentWord;
-import net.minestom.server.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -25,9 +22,11 @@ import static net.minestom.server.command.builder.arguments.ArgumentType.Word;
 
 public class GroupSubCommand extends Command {
 
-    public GroupSubCommand() {
-        super("group");
+    public GroupSubCommand(@NotNull PermissionProvider provider) {
+        super(provider, "group");
 
+
+        setPermission("mpermission.command.group");
         ArgumentWord option = Word("option").from("perm");
         ArgumentWord action = Word("action").from("add", "remove");
         ArgumentWord group = Word("groupName");
@@ -48,11 +47,6 @@ public class GroupSubCommand extends Command {
         final int priority = Integer.parseInt(context.get("priority"));
         final String groupName = context.get("groupName");
 
-        if (! checkPermissions(sender, "mperms.command")) {
-            sender.sendMessage(MessageConfig.HAS_NO_PERMISSION);
-            return;
-        }
-
         if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
             sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
             return;
@@ -64,7 +58,7 @@ public class GroupSubCommand extends Command {
             sender.sendMessage(MessageConfig.ONLY_NUMBER_ALLOWED);
             return;
         }
-        PermissionBootstrap.getBootstrap().getPermissionPool().updateGroup(permissionGroup);
+        PermissionBootstrap.getBootstrap().getPermissionPool().reloadGroup(permissionGroup);
         sender.sendMessage(MessageConfig.GROUP_PRIORITY_CHANGED.replace("%group%", permissionGroup.getColorCode() + permissionGroup.getName()).replace("%priority%", String.valueOf(priority)));
     }
     //</editor-fold>
@@ -72,11 +66,6 @@ public class GroupSubCommand extends Command {
     //<editor-fold desc="executeDelete">
     private void executeDelete(@NotNull CommandSender sender, @NotNull CommandContext context) {
         final String groupName = context.get("groupName");
-
-        if (! checkPermissions(sender, "mperms.command")) {
-            sender.sendMessage(MessageConfig.HAS_NO_PERMISSION);
-            return;
-        }
 
         if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
             sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
@@ -92,11 +81,6 @@ public class GroupSubCommand extends Command {
     private void executeCreate(@NotNull CommandSender sender, @NotNull CommandContext context) {
         final boolean defaults = Boolean.parseBoolean(context.get("default"));
         final String groupName = context.get("groupName");
-
-        if (! checkPermissions(sender, "mperms.command")) {
-            sender.sendMessage(MessageConfig.HAS_NO_PERMISSION);
-            return;
-        }
 
         if (PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
             sender.sendMessage(MessageConfig.GROUP_IS_ALREADY_IN_USE.replace("%group%", groupName));
@@ -123,11 +107,6 @@ public class GroupSubCommand extends Command {
         final String permission = context.get("permission");
         final String groupName = context.get("groupName");
 
-        if (! checkPermissions(sender, "mperms.command")) {
-            sender.sendMessage(MessageConfig.HAS_NO_PERMISSION);
-            return;
-        }
-
         if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
             sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
             return;
@@ -140,7 +119,7 @@ public class GroupSubCommand extends Command {
                 return;
             }
             permissionGroup.addPermission(permission);
-            PermissionBootstrap.getBootstrap().getPermissionPool().updateGroup(permissionGroup);
+            PermissionBootstrap.getBootstrap().getPermissionPool().reloadGroup(permissionGroup);
             sender.sendMessage(MessageConfig.GROUP_SUCCESSFULLY_PERMISSION_ADD.replace("%permission%", permission).replace("%group%", permissionGroup.getColorCode() + permissionGroup.getName()));
         } else if (action.equalsIgnoreCase("remove")) {
             if (! permissionGroup.hasPermission(permission)) {
@@ -148,7 +127,7 @@ public class GroupSubCommand extends Command {
                 return;
             }
             permissionGroup.removePermission(permission);
-            PermissionBootstrap.getBootstrap().getPermissionPool().updateGroup(permissionGroup);
+            PermissionBootstrap.getBootstrap().getPermissionPool().reloadGroup(permissionGroup);
             sender.sendMessage(MessageConfig.GROUP_SUCCESSFULLY_PERMISSION_REMOVE.replace("%permission%", permission).replace("%group%", permissionGroup.getColorCode() + permissionGroup.getName()));
         }
 
@@ -158,11 +137,6 @@ public class GroupSubCommand extends Command {
     //<editor-fold desc="executeInfo">
     private void executeInfo(@NotNull CommandSender sender, @NotNull CommandContext context) {
         final String groupName = context.get("groupName");
-
-        if (! checkPermissions(sender, "mperms.command")) {
-            sender.sendMessage(MessageConfig.HAS_NO_PERMISSION);
-            return;
-        }
 
         if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
             sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
@@ -183,14 +157,6 @@ public class GroupSubCommand extends Command {
                     .replace("%permissions%", String.join("§7, §c", group.getPermissions()));
             sender.sendMessage(line);
         }
-    }
-    //</editor-fold>
-
-    //<editor-fold desc="checkPermissions">
-    public final boolean checkPermissions(CommandSender sender, String permission) {
-        if (sender instanceof Player player)
-            return player.hasPermission(permission);
-        return true;
     }
     //</editor-fold>
 }
