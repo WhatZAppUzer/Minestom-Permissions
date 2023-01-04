@@ -1,13 +1,12 @@
 package dev.whatsappuser.minestom.permissions.commands;
 
+import dev.whatsappuser.minestom.lib.command.Command;
+import dev.whatsappuser.minestom.lib.permissions.PermissionProvider;
 import dev.whatsappuser.minestom.permissions.commands.subcommands.GroupSubCommand;
 import dev.whatsappuser.minestom.permissions.commands.subcommands.GuiSubCommand;
 import dev.whatsappuser.minestom.permissions.commands.subcommands.PlayerSubCommand;
-import dev.whatsappuser.minestom.permissions.config.MessageConfig;
 import net.kyori.adventure.text.Component;
-import net.minestom.server.command.CommandSender;
-import net.minestom.server.command.builder.Command;
-import net.minestom.server.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * development by TimoH created on 18:59:23 | 01.01.2023
@@ -15,16 +14,10 @@ import net.minestom.server.entity.Player;
 
 public class PermissionCommand extends Command {
 
-    public PermissionCommand() {
-        super("mperms");
+    public PermissionCommand(@NotNull PermissionProvider provider) {
+        super(provider, "mperms", "permissions");
 
-        setCondition((sender, commandString) -> {
-            if(!checkPermissions(sender, "mperms.command")) {
-                sender.sendMessage(MessageConfig.HAS_NO_PERMISSION);
-                return false;
-            }
-            return true;
-        });
+        setPermission("mpermission.command");
 
         setDefaultExecutor((sender, context) -> {
             sender.sendMessage(Component.text("/mperms user [name] info"));
@@ -37,15 +30,10 @@ public class PermissionCommand extends Command {
             sender.sendMessage(Component.text("/mperms group [name] setPriority [priority(int)]"));
         });
 
-        addSubcommand(new PlayerSubCommand());
-        addSubcommand(new GroupSubCommand());
-        addSubcommand(new GuiSubCommand());
+        addSubcommand(new GuiSubCommand(provider));
+        addSubcommand(new PlayerSubCommand(provider));
+        addSubcommand(new GroupSubCommand(provider));
 
-    }
-
-    public final boolean checkPermissions(CommandSender sender, String permission) {
-        if(sender instanceof Player player)
-            return player.hasPermission(permission);
-        return true;
+        System.out.println("Permission: " + getPermission());
     }
 }

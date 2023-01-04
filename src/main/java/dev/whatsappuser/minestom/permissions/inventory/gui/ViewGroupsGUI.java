@@ -11,7 +11,6 @@ import net.minestom.server.item.Material;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * development by TimoH created on 19:23:55 | 03.01.2023
@@ -26,7 +25,7 @@ public class ViewGroupsGUI extends SingletonInventory {
 
         for (int i = 0; i < PermissionBootstrap.getBootstrap().getDatabase().getAllLoadedGroups().size(); i++) {
             PermissionGroup group = PermissionBootstrap.getBootstrap().getDatabase().getAllLoadedGroups().stream().toList().get(i);
-            fill(i + 1, new ClickableItem(
+            fill(i, new ClickableItem(
                     ItemStack.builder(Material.ANCIENT_DEBRIS).displayName(Component.text(group.getColorCode() + group.getName()))
                             .lore(Component.text("§7Click for options"),
                                     Component.text(""), Component.text("§7Id §8» §c" + group.getId()),
