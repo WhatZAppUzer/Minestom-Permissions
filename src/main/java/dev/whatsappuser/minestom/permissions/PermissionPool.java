@@ -2,13 +2,11 @@ package dev.whatsappuser.minestom.permissions;
 
 import dev.whatsappuser.minestom.permissions.group.PermissionGroup;
 import dev.whatsappuser.minestom.permissions.player.PermissionUser;
-import dev.whatsappuser.minestom.permissions.storage.IDatabase;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.permission.Permission;
 
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -71,13 +69,10 @@ public class PermissionPool {
         player.setDisplayName(Component.text(permissionUser.getGroup().getDisplay() + player.getUsername()));
     }
 
-    public void updateGroup(PermissionGroup group) {
-        PermissionBootstrap.getBootstrap().getDatabase().saveGroup(group);
-        PermissionBootstrap.getBootstrap().getDatabase().getAllLoadedGroups().remove(group);
-        PermissionBootstrap.getBootstrap().getDatabase().loadGroup(group.getName());
-        PermissionBootstrap.getBootstrap().getDatabase().getAllLoadedGroups().add(group);
+    public void reloadGroup(PermissionGroup group) {
+        PermissionBootstrap.getBootstrap().getDatabase().reloadGroup(group);
         for (PermissionUser cachedUser : PermissionBootstrap.getBootstrap().getDatabase().getCachedUsers()) {
-            if(cachedUser.getGroup().equals(group)) {
+            if (cachedUser.getGroup().equals(group)) {
                 Player player = MinecraftServer.getConnectionManager().getPlayer(cachedUser.getUniqueId());
                 assert player != null;
                 updatePlayer(player);
