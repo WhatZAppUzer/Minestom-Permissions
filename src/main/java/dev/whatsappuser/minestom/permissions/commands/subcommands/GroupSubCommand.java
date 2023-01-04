@@ -35,75 +35,77 @@ public class GroupSubCommand extends Command {
 
         ArgumentWord permission = Word("permission");
         ArgumentWord priority = Word("priority");
-        ArgumentWord prefix = Word("prefix");
-        ArgumentWord display = Word("display");
-        ArgumentWord suffix = Word("suffix");
 
         addSyntax(this::executeInfo, group, Literal("info"));
         addSyntax(this::executePerm, group, option, action, permission);
         addSyntax(this::executeCreate, group, Literal("create"), defaults);
         addSyntax(this::executeDelete, group, Literal("delete"));
-        addSyntax(this::executeSetPriority, group, Literal("setPriority"), priority);
+        addSyntax(this::executeSetPriority, group, Literal("setpriority"), priority);
     }
 
+    //<editor-fold desc="executeSetPriority">
     private void executeSetPriority(@NotNull CommandSender sender, @NotNull CommandContext context) {
         final int priority = Integer.parseInt(context.get("priority"));
         final String groupName = context.get("groupName");
 
         if (! checkPermissions(sender, "mperms.command")) {
-            sender.sendMessage(Component.text("You are not authorized to use this command.", NamedTextColor.RED));
+            sender.sendMessage(MessageConfig.HAS_NO_PERMISSION);
             return;
         }
 
         if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
-            sender.sendMessage(Component.text("the group " + groupName + " doesn't exist.", NamedTextColor.RED));
+            sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
             return;
         }
         PermissionGroup permissionGroup = PermissionBootstrap.getBootstrap().getPermissionPool().getGroup(groupName);
         try {
             permissionGroup.setPriority(priority);
         } catch (NumberFormatException e) {
-            sender.sendMessage(Component.text("the priority allowed only numbers", NamedTextColor.RED));
+            sender.sendMessage(MessageConfig.ONLY_NUMBER_ALLOWED);
             return;
         }
         PermissionBootstrap.getBootstrap().getPermissionPool().updateGroup(permissionGroup);
-        sender.sendMessage(Component.text("Priority from group " + permissionGroup.getColorCode() + permissionGroup.getName() + " §awas changed to §e" +priority, NamedTextColor.GREEN));
+        sender.sendMessage(MessageConfig.GROUP_PRIORITY_CHANGED.replace("%group%", permissionGroup.getColorCode() + permissionGroup.getName()).replace("%priority%", String.valueOf(priority)));
     }
+    //</editor-fold>
 
+    //<editor-fold desc="executeDelete">
     private void executeDelete(@NotNull CommandSender sender, @NotNull CommandContext context) {
         final String groupName = context.get("groupName");
 
         if (! checkPermissions(sender, "mperms.command")) {
-            sender.sendMessage(Component.text("You are not authorized to use this command.", NamedTextColor.RED));
+            sender.sendMessage(MessageConfig.HAS_NO_PERMISSION);
             return;
         }
 
         if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
-            sender.sendMessage(Component.text("the group " + groupName + " doesn't exist.", NamedTextColor.RED));
+            sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
             return;
         }
 
         PermissionBootstrap.getBootstrap().getDatabase().deleteGroup(groupName);
-        sender.sendMessage(Component.text("Successfully " + groupName + " deleted.", NamedTextColor.GREEN));
+        sender.sendMessage(MessageConfig.GROUP_SUCCESSFULLY_DELETED.replace("%group%", groupName));
     }
+    //</editor-fold>
 
+    //<editor-fold desc="executeCreate">
     private void executeCreate(@NotNull CommandSender sender, @NotNull CommandContext context) {
         final boolean defaults = Boolean.parseBoolean(context.get("default"));
         final String groupName = context.get("groupName");
 
         if (! checkPermissions(sender, "mperms.command")) {
-            sender.sendMessage(Component.text("You are not authorized to use this command.", NamedTextColor.RED));
+            sender.sendMessage(MessageConfig.HAS_NO_PERMISSION);
             return;
         }
 
         if (PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
-            sender.sendMessage(Component.text("This group " + groupName + " is already in use", NamedTextColor.RED));
+            sender.sendMessage(MessageConfig.GROUP_IS_ALREADY_IN_USE.replace("%group%", groupName));
             return;
         }
         PermissionGroup group = new PermissionGroup(groupName, "", "", "", "", "", new HashSet<>()
                 , PermissionBootstrap.getBootstrap().getDatabase().getAllLoadedGroups().size() + 1, 1, defaults);
         PermissionBootstrap.getBootstrap().getPermissionPool().createGroup(group);
-        sender.sendMessage(Component.text("You have created " + groupName + ".", NamedTextColor.GREEN));
+        sender.sendMessage(MessageConfig.GROUP_SUCCESSFULLY_CREATED.replace("%group%", groupName));
 
         if (defaults) {
             var aDefault = PermissionPool.DEFAULT;
@@ -113,43 +115,47 @@ public class GroupSubCommand extends Command {
         }
 
     }
+    //</editor-fold>
 
+    //<editor-fold desc="executePerm">
     private void executePerm(@NotNull CommandSender sender, @NotNull CommandContext context) {
         final String action = context.get("action");
         final String permission = context.get("permission");
         final String groupName = context.get("groupName");
 
         if (! checkPermissions(sender, "mperms.command")) {
-            sender.sendMessage(Component.text("You are not authorized to use this command.", NamedTextColor.RED));
+            sender.sendMessage(MessageConfig.HAS_NO_PERMISSION);
             return;
         }
 
         if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
-            sender.sendMessage(Component.text("the group " + groupName + " doesn't exist.", NamedTextColor.RED));
+            sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
             return;
         }
 
         PermissionGroup permissionGroup = PermissionBootstrap.getBootstrap().getPermissionPool().getGroup(groupName);
         if (action.equalsIgnoreCase("add")) {
             if (permissionGroup.hasPermission(permission)) {
-                sender.sendMessage(Component.text("The group " + permissionGroup.getColorCode() + permissionGroup.getName() + " §chas already the permission: " + permission, NamedTextColor.RED));
+                sender.sendMessage(MessageConfig.GROUP_HAS_ALREADY_PERMISSION.replace("%group%", permissionGroup.getColorCode() + permissionGroup.getName()).replace("%permission%", permission));
                 return;
             }
             permissionGroup.addPermission(permission);
             PermissionBootstrap.getBootstrap().getPermissionPool().updateGroup(permissionGroup);
-            sender.sendMessage(Component.text("Added the permission " + permission + " to " + permissionGroup.getColorCode() + permissionGroup.getName()));
+            sender.sendMessage(MessageConfig.GROUP_SUCCESSFULLY_PERMISSION_ADD.replace("%permission%", permission).replace("%group%", permissionGroup.getColorCode() + permissionGroup.getName()));
         } else if (action.equalsIgnoreCase("remove")) {
             if (! permissionGroup.hasPermission(permission)) {
-                sender.sendMessage(Component.text("The group " + permissionGroup.getColorCode() + permissionGroup.getName() + " §cdoesn't have the permission: " + permission, NamedTextColor.RED));
+                sender.sendMessage(MessageConfig.GROUP_HAS_NO_PERMISSION.replace("%group%", permissionGroup.getColorCode() + permissionGroup.getName()).replace("%permission%", permission));
                 return;
             }
             permissionGroup.removePermission(permission);
             PermissionBootstrap.getBootstrap().getPermissionPool().updateGroup(permissionGroup);
-            sender.sendMessage(Component.text("Removed the permission " + permission + " from " + permissionGroup.getColorCode() + permissionGroup.getName()));
+            sender.sendMessage(MessageConfig.GROUP_SUCCESSFULLY_PERMISSION_REMOVE.replace("%permission%", permission).replace("%group%", permissionGroup.getColorCode() + permissionGroup.getName()));
         }
 
     }
+    //</editor-fold>
 
+    //<editor-fold desc="executeInfo">
     private void executeInfo(@NotNull CommandSender sender, @NotNull CommandContext context) {
         final String groupName = context.get("groupName");
 
@@ -177,23 +183,14 @@ public class GroupSubCommand extends Command {
                     .replace("%permissions%", String.join("§7, §c", group.getPermissions()));
             sender.sendMessage(line);
         }
-        /*sender.sendMessage(Component.text("§7Prefix §8» §c" + group.getPrefix()));
-        sender.sendMessage(Component.text("§7Display §8» §c" + group.getDisplay()));
-        sender.sendMessage(Component.text("§7Suffix §8» §c" + (group.getSuffix().isEmpty() ? group.getSuffix() : "none")));
-        sender.sendMessage(Component.text("§7ChatFormat §8» " + group.getChatFormat()));
-        sender.sendMessage(Component.text("§7Id §8» §c" + group.getId()));
-        sender.sendMessage(Component.text("§7Priority §8» §c" + group.getPriority()));
-        sender.sendMessage(Component.text("§7Default §8» " + (group.isDefault() ? "§atrue" : "§cfalse")));
-        if (group.getPermissions().isEmpty()) {
-            sender.sendMessage(Component.text("§7Permissions §8» §cnone"));
-        } else {
-            sender.sendMessage(Component.text("§7Permissions §8» §c" + String.join("§7, §c", group.getPermissions())));
-        }*/
     }
+    //</editor-fold>
 
+    //<editor-fold desc="checkPermissions">
     public final boolean checkPermissions(CommandSender sender, String permission) {
         if (sender instanceof Player player)
             return player.hasPermission(permission);
         return true;
     }
+    //</editor-fold>
 }
