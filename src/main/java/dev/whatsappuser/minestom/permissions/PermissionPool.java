@@ -25,16 +25,8 @@ public class PermissionPool {
         return PermissionBootstrap.getBootstrap().getDatabase().getPlayer(uuid);
     }
 
-    public PermissionUser getPlayer(String name) {
-        return PermissionBootstrap.getBootstrap().getDatabase().getPlayer(name);
-    }
-
     public PermissionGroup getGroup(String name) {
         return PermissionBootstrap.getBootstrap().getDatabase().getGroup(name);
-    }
-
-    public PermissionGroup getGroup(int id) {
-        return PermissionBootstrap.getBootstrap().getDatabase().getGroup(id);
     }
 
     public boolean isGroupRegistered(String group) {
