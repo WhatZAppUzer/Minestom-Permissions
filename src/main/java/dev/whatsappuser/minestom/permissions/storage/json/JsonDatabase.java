@@ -1,10 +1,11 @@
-package dev.whatsappuser.minestom.permissions.storage;
+package dev.whatsappuser.minestom.permissions.storage.json;
 
 import com.google.gson.reflect.TypeToken;
 import dev.whatsappuser.minestom.lib.configuration.JsonConfiguration;
 import dev.whatsappuser.minestom.permissions.PermissionPool;
 import dev.whatsappuser.minestom.permissions.group.PermissionGroup;
 import dev.whatsappuser.minestom.permissions.player.PermissionUser;
+import dev.whatsappuser.minestom.permissions.storage.IDatabase;
 import dev.whatsappuser.minestom.permissions.utilities.FileUtil;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
@@ -68,27 +69,9 @@ public class JsonDatabase implements IDatabase {
     }
 
     @Override
-    public PermissionUser getPlayer(String name) {
-        for (PermissionUser permissionUser : this.permissionUsers) {
-            if (permissionUser.getName().equalsIgnoreCase(name))
-                return permissionUser;
-        }
-        return null;
-    }
-
-    @Override
     public PermissionGroup getGroup(String name) {
         for (PermissionGroup permissionGroup : this.permissionGroups) {
             if (permissionGroup.getName().equalsIgnoreCase(name))
-                return permissionGroup;
-        }
-        return null;
-    }
-
-    @Override
-    public PermissionGroup getGroup(int id) {
-        for (PermissionGroup permissionGroup : this.permissionGroups) {
-            if (permissionGroup.getId() == id)
                 return permissionGroup;
         }
         return null;
