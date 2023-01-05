@@ -9,10 +9,9 @@ import dev.whatsappuser.minestom.permissions.listener.ChatListener;
 import dev.whatsappuser.minestom.permissions.listener.PlayerDisconnectListener;
 import dev.whatsappuser.minestom.permissions.listener.PlayerSpawnListener;
 import dev.whatsappuser.minestom.permissions.storage.IDatabase;
-import dev.whatsappuser.minestom.permissions.storage.JsonDatabase;
+import dev.whatsappuser.minestom.permissions.storage.json.JsonDatabase;
 import lombok.Getter;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.entity.Player;
 
 import java.util.HashSet;
 
@@ -68,12 +67,8 @@ public class PermissionBootstrap extends BootExtension {
 
     @Override
     public void terminate() {
-        for (Player onlinePlayer : MinecraftServer.getConnectionManager().getOnlinePlayers()) {
-            this.database.savePlayer(this.permissionPool.getPlayer(onlinePlayer.getUuid()));
-        }
-        for (PermissionGroup allLoadedGroup : this.database.getAllLoadedGroups()) {
-            this.database.saveGroup(allLoadedGroup);
-        }
+        this.database.savePlayers();
+        this.database.saveGroups();
         this.database.unloadDatabase();
         getLogger().info("Extension: " + getOrigin().getName() + " Disabled.");
     }
