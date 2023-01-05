@@ -18,11 +18,7 @@ public interface IDatabase {
 
     PermissionUser getPlayer(UUID uuid);
 
-    PermissionUser getPlayer(String name);
-
     PermissionGroup getGroup(String name);
-
-    PermissionGroup getGroup(int id);
 
     PermissionUser loadPlayer(UUID uuid);
 
