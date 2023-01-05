@@ -33,7 +33,5 @@ public class PermissionCommand extends Command {
         addSubcommand(new GuiSubCommand(provider));
         addSubcommand(new PlayerSubCommand(provider));
         addSubcommand(new GroupSubCommand(provider));
-
-        System.out.println("Permission: " + getPermission());
     }
 }
