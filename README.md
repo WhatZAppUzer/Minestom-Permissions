@@ -2,8 +2,8 @@
 
 A permission extension for Minestom
 
-To run the commands give yourself the permission "mperms.command"
-from the console with "mperms user <username> perm add mperms.command"
+To run the commands give yourself the permission "mpermission.command"
+from the console with "mperms user <username> perm add mpermission.command"
   
 ## Progress
 - [x] player specific permissions
@@ -11,7 +11,7 @@ from the console with "mperms user <username> perm add mperms.command"
 - [x] permission saving
 - [x] update player perms when changing group perms
 - [ ] customizable messages
-- [ ] mongodb support(in progress)
+- [x] mongodb support
 - [ ] permissions tabcomplete
 - [ ] correct arrangement with priority id in the tablist
 - [x] '*' permissions added
