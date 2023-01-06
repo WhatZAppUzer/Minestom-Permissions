@@ -101,11 +101,6 @@ public class JsonDatabase implements IDatabase {
     }
 
     @Override
-    public PermissionUser loadPlayer(String name) {
-        throw new UnsupportedOperationException("this method is not supported, use: loadPlayer(UUID)");
-    }
-
-    @Override
     public void createPlayer(UUID uuid) {
         File file = new File(MinecraftServer.getExtensionManager().getExtensionFolder() + "/Permissions/Users/" + uuid.toString() + ".json");
         if (! file.exists()) {
@@ -119,11 +114,6 @@ public class JsonDatabase implements IDatabase {
         PermissionUser user = new PermissionUser(uuid, MinecraftServer.getConnectionManager().getPlayer(uuid).getUsername(), PermissionPool.DEFAULT, new HashSet<>());
         this.userDocument.append("name", user.getName()).append("groupName", user.getGroup().getName()).append("permissions", user.getPermissions());
         this.userDocument.save(MinecraftServer.getExtensionManager().getExtensionFolder() + "/Permissions/Users/" + uuid + ".json");
-    }
-
-    @Override
-    public void createPlayer(String name) {
-        throw new UnsupportedOperationException("this method is not supported, use: loadPlayer(UUID)");
     }
 
     @Override
@@ -241,12 +231,6 @@ public class JsonDatabase implements IDatabase {
         }.getType()), document.getInt("id"), document.getInt("priority"), document.getBoolean("default"));
         getAllLoadedGroups().add(group);
         return group;
-    }
-
-    @Override
-    @Deprecated
-    public PermissionGroup loadGroup(int id) {
-        throw new UnsupportedOperationException("this method is not supported use: loadGroup(name)");
     }
 
     @Override
