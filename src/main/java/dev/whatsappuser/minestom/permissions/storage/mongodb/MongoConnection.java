@@ -1,12 +1,10 @@
 package dev.whatsappuser.minestom.permissions.storage.mongodb;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
+import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import dev.whatsappuser.minestom.permissions.PermissionPool;
 import dev.whatsappuser.minestom.permissions.group.PermissionGroup;
 import dev.whatsappuser.minestom.permissions.player.PermissionUser;
 import dev.whatsappuser.minestom.permissions.storage.IDatabase;
@@ -15,10 +13,7 @@ import net.minestom.server.entity.Player;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * development by TimoH created on 17:43:31 | 04.01.2023
@@ -110,88 +105,148 @@ public class MongoConnection implements IDatabase {
     }
 
     @Override
-    public PermissionUser loadPlayer(String name) {
-        return null;
-    }
-
-    @Override
     public void createPlayer(UUID uuid) {
+        var documentUser = getUserCollection().find(createUserFilter(uuid)).first();
+        if (documentUser != null)
+            return;
 
-    }
-
-    @Override
-    public void createPlayer(String name) {
-
+        PermissionUser user = new PermissionUser(uuid, Objects.requireNonNull(MinecraftServer.getConnectionManager().getPlayer(uuid)).getUsername(), PermissionPool.DEFAULT, new HashSet<>());
+        Document document = new Document("uuid", uuid.toString())
+                .append("group", user.getGroup().getName())
+                .append("permissions", user.getPermissions());
+        getUserCollection().insertOne(document);
     }
 
     @Override
     public void createGroup(PermissionGroup group) {
+        var documentGroup = getGroupCollection().find(createGroupFilter(group.getName())).first();
+        if (documentGroup != null)
+            return;
 
+        Document document = new Document("name", group.getName())
+                .append("prefix", group.getPrefix())
+                .append("display", group.getDisplay())
+                .append("suffix", group.getSuffix())
+                .append("colorCode", group.getColorCode())
+                .append("chatFormat", group.getChatFormat())
+                .append("permissions", group.getPermissions())
+                .append("priority", group.getPriority())
+                .append("id", group.getId())
+                .append("default", group.isDefault());
+
+        getGroupCollection().insertOne(document);
     }
 
     @Override
     public void deleteGroup(String group) {
+        var document = getGroupCollection().find(createGroupFilter(group)).first();
+        if (document == null)
+            return;
 
+        getGroupCollection().deleteOne(document);
     }
 
     @Override
     public Set<PermissionGroup> getAllGroups() {
-        return null;
+        Set<PermissionGroup> groups = new HashSet<>();
+        for (Document document : getGroupCollection().listIndexes()) {
+            groups.add(new PermissionGroup(document.getString("name"), document.getString("display"),
+                    document.getString("prefix"), document.getString("suffix"),
+                    document.getString("colorCode"), document.getString("chatFormat"),
+                    new HashSet<>(document.getList("permissions", String.class)),
+                    document.getInteger("priority"), document.getInteger("id"), document.getBoolean("default")));
+        }
+        return groups;
     }
 
     @Override
     public Set<PermissionGroup> getAllLoadedGroups() {
-        return null;
+        return this.permissionGroups;
     }
 
     @Override
     public void reloadGroup(PermissionGroup group) {
+        if (! this.permissionGroups.contains(group))
+            return;
 
+        this.permissionGroups.remove(group);
+        saveGroup(group);
+        this.permissionGroups.add(group);
     }
 
     @Override
     public void savePlayer(PermissionUser user) {
+        var document = getUserCollection().find(createUserFilter(user.getUniqueId())).first();
+        if (document == null)
+            return;
 
+        document.append("name", user.getName())
+                .append("group", user.getGroup().getName())
+                .append("permissions", user.getGroup().getPermissions());
+
+        getUserCollection().updateOne(createUserFilter(user.getUniqueId()), new BasicDBObject("$set", document));
     }
 
     @Override
     public void savePlayers() {
-
+        getCachedUsers().forEach(this::savePlayer);
     }
 
     @Override
     public void saveGroup(PermissionGroup group) {
+        var document = getGroupCollection().find(createGroupFilter(group.getName())).first();
+        if (document == null)
+            return;
 
+        document.append("prefix", group.getPrefix())
+                .append("display", group.getDisplay())
+                .append("suffix", group.getSuffix())
+                .append("colorCode", group.getColorCode())
+                .append("chatFormat", group.getChatFormat())
+                .append("permissions", group.getPermissions())
+                .append("id", group.getId())
+                .append("priority", group.getPriority())
+                .append("default", group.isDefault());
+
+        getGroupCollection().updateOne(createGroupFilter(group.getName()), new BasicDBObject("$set", document));
     }
 
     @Override
     public void saveGroups() {
-
+        getAllLoadedGroups().forEach(this::saveGroup);
     }
 
     @Override
     public PermissionGroup loadGroup(String name) {
-        return null;
-    }
+        var document = getGroupCollection().find(createGroupFilter(name)).first();
+        if (document == null) return null;
 
-    @Override
-    public PermissionGroup loadGroup(int id) {
-        return null;
+        PermissionGroup group = new PermissionGroup(name, document.getString("prefix"), document.getString("display")
+                , document.getString("suffix"), document.getString("colorCode"), document.getString("chatFormat")
+                , new HashSet<>(document.getList("permissions", String.class)), document.getInteger("id"), document.getInteger("priority")
+                , document.getBoolean("default"));
+        this.permissionGroups.add(group);
+        return group;
     }
 
     @Override
     public boolean isDefaultGroupExists() {
+        for (PermissionGroup permissionGroup : this.permissionGroups) {
+            return permissionGroup.isDefault();
+        }
         return false;
     }
 
     @Override
     public void loadGroups() {
-
+        for (Document document : getGroupCollection().listIndexes()) {
+            loadGroup(document.getString("name"));
+        }
     }
 
     @Override
     public Set<PermissionUser> getCachedUsers() {
-        return null;
+        return this.permissionUsers;
     }
 
     public MongoCollection<Document> getGroupCollection() {
