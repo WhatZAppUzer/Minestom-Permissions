@@ -24,11 +24,7 @@ public interface IDatabase {
 
     void loadPlayers();
 
-    PermissionUser loadPlayer(String name);
-
     void createPlayer(UUID uuid);
-
-    void createPlayer(String name);
 
     void createGroup(PermissionGroup group);
 
@@ -49,8 +45,6 @@ public interface IDatabase {
     void saveGroups();
 
     PermissionGroup loadGroup(String name);
-
-    PermissionGroup loadGroup(int id);
 
     boolean isDefaultGroupExists();
 
