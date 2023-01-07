@@ -11,7 +11,7 @@ import net.minestom.server.command.builder.CommandContext;
 import net.minestom.server.command.builder.arguments.ArgumentWord;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 import static net.minestom.server.command.builder.arguments.ArgumentType.Literal;
 import static net.minestom.server.command.builder.arguments.ArgumentType.Word;
@@ -47,18 +47,20 @@ public class GroupSubCommand extends Command {
         final int priority = Integer.parseInt(context.get("priority"));
         final String groupName = context.get("groupName");
 
-        if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
-            sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
-            return;
-        }
-        PermissionGroup permissionGroup = PermissionBootstrap.getBootstrap().getPermissionPool().getGroup(groupName);
+        /** TODO:
+         *  if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
+         sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
+         return;
+         }*/
+
+        PermissionGroup permissionGroup = PermissionBootstrap.getBootstrap().getService().getDatabase().getGroup(groupName);
         try {
             permissionGroup.setPriority(priority);
         } catch (NumberFormatException e) {
             sender.sendMessage(MessageConfig.ONLY_NUMBER_ALLOWED);
             return;
         }
-        PermissionBootstrap.getBootstrap().getPermissionPool().reloadGroup(permissionGroup);
+        //PermissionBootstrap.getBootstrap().getPermissionPool().reloadGroup(permissionGroup);
         sender.sendMessage(MessageConfig.GROUP_PRIORITY_CHANGED.replace("%group%", permissionGroup.getColorCode() + permissionGroup.getName()).replace("%priority%", String.valueOf(priority)));
     }
     //</editor-fold>
@@ -67,12 +69,13 @@ public class GroupSubCommand extends Command {
     private void executeDelete(@NotNull CommandSender sender, @NotNull CommandContext context) {
         final String groupName = context.get("groupName");
 
-        if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
-            sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
-            return;
-        }
+        /** TODO:
+         *  if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
+         sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
+         return;
+         }*/
 
-        PermissionBootstrap.getBootstrap().getDatabase().deleteGroup(groupName);
+        PermissionBootstrap.getBootstrap().getService().getDatabase().deleteGroup(groupName);
         sender.sendMessage(MessageConfig.GROUP_SUCCESSFULLY_DELETED.replace("%group%", groupName));
     }
     //</editor-fold>
@@ -82,19 +85,21 @@ public class GroupSubCommand extends Command {
         final boolean defaults = Boolean.parseBoolean(context.get("default"));
         final String groupName = context.get("groupName");
 
-        if (PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
-            sender.sendMessage(MessageConfig.GROUP_IS_ALREADY_IN_USE.replace("%group%", groupName));
-            return;
-        }
-        PermissionGroup group = new PermissionGroup(groupName, "", "", "", "", "", new HashSet<>()
-                , PermissionBootstrap.getBootstrap().getDatabase().getAllLoadedGroups().size() + 1, 1, defaults);
-        PermissionBootstrap.getBootstrap().getPermissionPool().createGroup(group);
+        /** TODO:
+         *  if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
+         sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
+         return;
+         }*/
+
+        PermissionGroup group = new PermissionGroup(groupName, "", "", "", "", "", new ArrayList<>()
+                , PermissionBootstrap.getBootstrap().getService().getDatabase().getAllLoadedGroups().size() + 1, 1, defaults);
+        PermissionBootstrap.getBootstrap().getService().getDatabase().createGroup(group);
         sender.sendMessage(MessageConfig.GROUP_SUCCESSFULLY_CREATED.replace("%group%", groupName));
 
         if (defaults) {
             var aDefault = PermissionPool.DEFAULT;
             aDefault.setDefault(false);
-            PermissionBootstrap.getBootstrap().getDatabase().saveGroup(aDefault);
+            PermissionBootstrap.getBootstrap().getService().getDatabase().saveGroup(aDefault);
             PermissionPool.DEFAULT = group;
         }
 
@@ -107,19 +112,20 @@ public class GroupSubCommand extends Command {
         final String permission = context.get("permission");
         final String groupName = context.get("groupName");
 
-        if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
-            sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
-            return;
-        }
+        /** TODO:
+         *  if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
+         sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
+         return;
+         }*/
 
-        PermissionGroup permissionGroup = PermissionBootstrap.getBootstrap().getPermissionPool().getGroup(groupName);
+        PermissionGroup permissionGroup = PermissionBootstrap.getBootstrap().getService().getDatabase().getGroup(groupName);
         if (action.equalsIgnoreCase("add")) {
             if (permissionGroup.hasPermission(permission)) {
                 sender.sendMessage(MessageConfig.GROUP_HAS_ALREADY_PERMISSION.replace("%group%", permissionGroup.getColorCode() + permissionGroup.getName()).replace("%permission%", permission));
                 return;
             }
             permissionGroup.addPermission(permission);
-            PermissionBootstrap.getBootstrap().getPermissionPool().reloadGroup(permissionGroup);
+            //TODO: PermissionBootstrap.getBootstrap().getPermissionPool().reloadGroup(permissionGroup);
             sender.sendMessage(MessageConfig.GROUP_SUCCESSFULLY_PERMISSION_ADD.replace("%permission%", permission).replace("%group%", permissionGroup.getColorCode() + permissionGroup.getName()));
         } else if (action.equalsIgnoreCase("remove")) {
             if (! permissionGroup.hasPermission(permission)) {
@@ -127,7 +133,7 @@ public class GroupSubCommand extends Command {
                 return;
             }
             permissionGroup.removePermission(permission);
-            PermissionBootstrap.getBootstrap().getPermissionPool().reloadGroup(permissionGroup);
+            //TODO: PermissionBootstrap.getBootstrap().getPermissionPool().reloadGroup(permissionGroup);
             sender.sendMessage(MessageConfig.GROUP_SUCCESSFULLY_PERMISSION_REMOVE.replace("%permission%", permission).replace("%group%", permissionGroup.getColorCode() + permissionGroup.getName()));
         }
 
@@ -138,13 +144,14 @@ public class GroupSubCommand extends Command {
     private void executeInfo(@NotNull CommandSender sender, @NotNull CommandContext context) {
         final String groupName = context.get("groupName");
 
-        if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
-            sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
-            return;
-        }
+        /** TODO:
+         *  if (! PermissionBootstrap.getBootstrap().getPermissionPool().isGroupRegistered(groupName)) {
+         sender.sendMessage(MessageConfig.GROUP_IS_NOT_EXISTS.replace("%group%", groupName));
+         return;
+         }*/
 
         sender.sendMessage("");
-        PermissionGroup group = PermissionBootstrap.getBootstrap().getPermissionPool().getGroup(groupName);
+        PermissionGroup group = PermissionBootstrap.getBootstrap().getService().getDatabase().getGroup(groupName);
         sender.sendMessage(MessageConfig.GROUP_INFORMATION.replace("%group%", group.getColorCode() + group.getName()));
         for (String line : MessageConfig.GROUP_OPTION_INFORMATION) {
             line = line.replace("%group_prefix%", group.getPrefix())
