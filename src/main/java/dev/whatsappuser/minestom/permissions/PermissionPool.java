@@ -2,7 +2,6 @@ package dev.whatsappuser.minestom.permissions;
 
 import dev.whatsappuser.minestom.permissions.group.PermissionGroup;
 import dev.whatsappuser.minestom.permissions.player.PermissionUser;
-import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.permission.Permission;
@@ -17,84 +16,51 @@ public class PermissionPool {
 
     public static PermissionGroup DEFAULT;
 
-    public PermissionPool(PermissionGroup defaultGroup) {
-        DEFAULT = defaultGroup;
-    }
-
-    public PermissionUser getPlayer(UUID uuid) {
-        return PermissionBootstrap.getBootstrap().getDatabase().getPlayer(uuid);
+    public PermissionPool(PermissionGroup group) {
+        DEFAULT = group;
     }
 
     public PermissionGroup getGroup(String name) {
-        return PermissionBootstrap.getBootstrap().getDatabase().getGroup(name);
+        return PermissionBootstrap.getBootstrap().getService().getDatabase().getGroup(name);
     }
 
-    public boolean isGroupRegistered(String group) {
-        return this.getGroup(group) != null;
+    public PermissionUser getUser(UUID uuid) {
+        return PermissionBootstrap.getBootstrap().getService().getDatabase().getPlayer(uuid);
     }
 
-    public boolean isPlayerInGroup(Player player, String group) {
-        var user = getPlayer(player.getUuid());
-        var permissionGroup = getGroup(group);
-
-        return user.getGroup().getName().equalsIgnoreCase(permissionGroup.getName());
+    public void addPermission(String permission, PermissionGroup group) {
+        group.addPermission(permission);
     }
 
-    public void setPlayerInGroup(Player player, String group) {
-        var permissionUser = getPlayer(player.getUuid());
-        var permissionGroup = getGroup(group);
-        permissionUser.setGroup(permissionGroup);
+    public void removePermission(String permission, PermissionGroup group) {
+        group.removePermission(permission);
     }
 
-    public void updatePlayer(Player player) {
-        var permissionUser = getPlayer(player.getUuid());
-        PermissionBootstrap.getBootstrap().getDatabase().getCachedUsers().remove(permissionUser);
-        PermissionBootstrap.getBootstrap().getDatabase().getCachedUsers().add(permissionUser);
-        player.getAllPermissions().clear();
-        for (String permission : permissionUser.getGroup().getPermissions()) {
-            player.addPermission(new Permission(permission));
-        }
-        for (String permission : permissionUser.getPermissions()) {
-            player.addPermission(new Permission(permission));
-        }
-        player.refreshCommands();
-        player.setDisplayName(Component.text(permissionUser.getGroup().getDisplay() + player.getUsername()));
-    }
-
-    public void reloadGroup(PermissionGroup group) {
-        PermissionBootstrap.getBootstrap().getDatabase().reloadGroup(group);
-        for (PermissionUser cachedUser : PermissionBootstrap.getBootstrap().getDatabase().getCachedUsers()) {
-            if (cachedUser.getGroup().equals(group)) {
-                Player player = MinecraftServer.getConnectionManager().getPlayer(cachedUser.getUniqueId());
-                assert player != null;
-                updatePlayer(player);
-            }
-        }
-    }
-
-    public void createGroup(PermissionGroup group) {
-        PermissionBootstrap.getBootstrap().getDatabase().saveGroup(group);
-        PermissionBootstrap.getBootstrap().getDatabase().loadGroup(group.getName());
-    }
-
-    public boolean addPermission(String permission, PermissionGroup group) {
-        if(group.hasPermission(permission))
-            return false;
-        group.getPermissions().add(permission);
-        return true;
-    }
-
-    public void addPermission(Player player, String permission) {
-        PermissionUser user = getPlayer(player.getUuid());
+    public void addPermission(String permission, PermissionUser user) {
         user.addPermission(permission);
-        player.addPermission(new Permission(permission));
+    }
+
+    public void removePermission(String permission, PermissionUser user) {
+        user.removePermission(permission);
+    }
+
+    public void update(PermissionGroup group) {
+        PermissionBootstrap.getBootstrap().getService().getDatabase().saveGroup(group);
+        PermissionBootstrap.PERMISSION_GROUPS.remove(group);
+        PermissionBootstrap.getBootstrap().getService().getDatabase().loadGroup(group.getName());
+    }
+
+    public void update(PermissionUser user) {
+        var group = user.getGroup();
+        Player player = MinecraftServer.getConnectionManager().getPlayer(user.getUniqueId());
+        for (Permission allPermission : player.getAllPermissions()) {
+            player.removePermission(allPermission.getPermissionName());
+        }
+
+        for (String permission : group.getPermissions()) {
+            player.getAllPermissions().add(new Permission(permission));
+        }
         player.refreshCommands();
     }
 
-    public void removePermission(Player player, String permission) {
-        PermissionUser user = getPlayer(player.getUuid());
-        user.removePermission(permission);
-        player.removePermission(permission);
-        player.refreshCommands();
-    }
 }

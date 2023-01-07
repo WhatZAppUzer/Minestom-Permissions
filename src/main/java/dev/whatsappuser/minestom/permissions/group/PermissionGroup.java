@@ -3,7 +3,7 @@ package dev.whatsappuser.minestom.permissions.group;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * development by TimoH created on 18:42:42 | 01.01.2023
@@ -14,11 +14,11 @@ import java.util.Set;
 public class PermissionGroup {
 
     private String name, prefix, display, suffix, colorCode, chatFormat;
-    private Set<String> permissions;
+    private List<String> permissions;
     private int id, priority;
     private boolean isDefault;
 
-    public PermissionGroup(String name, String prefix, String display, String suffix, String colorCode, String chatFormat, Set<String> permissions, int id, int priority, boolean isDefault) {
+    public PermissionGroup(String name, String prefix, String display, String suffix, String colorCode, String chatFormat, List<String> permissions, int id, int priority, boolean isDefault) {
         this.name = name;
         this.prefix = prefix;
         this.display = display;
