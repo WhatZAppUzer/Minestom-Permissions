@@ -2,22 +2,11 @@ package dev.whatsappuser.minestom.permissions.commands.subcommands;
 
 import dev.whatsappuser.minestom.lib.command.Command;
 import dev.whatsappuser.minestom.lib.permissions.PermissionProvider;
-import dev.whatsappuser.minestom.permissions.PermissionBootstrap;
-import dev.whatsappuser.minestom.permissions.PermissionPool;
-import dev.whatsappuser.minestom.permissions.group.PermissionGroup;
-import dev.whatsappuser.minestom.permissions.player.PermissionUser;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.minestom.server.command.CommandSender;
-import net.minestom.server.command.builder.CommandContext;
 import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.command.builder.arguments.ArgumentWord;
 import net.minestom.server.command.builder.arguments.minecraft.ArgumentEntity;
-import net.minestom.server.entity.Player;
-import net.minestom.server.utils.entity.EntityFinder;
 import org.jetbrains.annotations.NotNull;
 
-import static net.minestom.server.command.builder.arguments.ArgumentType.Literal;
 import static net.minestom.server.command.builder.arguments.ArgumentType.Word;
 
 /**
@@ -38,14 +27,14 @@ public class PlayerSubCommand extends Command {
 
         ArgumentWord permission = Word("permission");
 
-        addSyntax(this::executeInfo, players, Literal("info"));
+        /*addSyntax(this::executeInfo, players, Literal("info"));
 
         addSyntax(this::executePermAdd, players, Literal("perm"), action, permission);
 
-        addSyntax(this::executeGroup, players, Literal("group"), groupAction, groupName);
+        addSyntax(this::executeGroup, players, Literal("group"), groupAction, groupName);*/
     }
 
-    private void executeGroup(@NotNull CommandSender sender, @NotNull CommandContext context) {
+    /*private void executeGroup(@NotNull CommandSender sender, @NotNull CommandContext context) {
         final String action = context.get("action");
         final EntityFinder target = context.get("player");
         final String group = context.get("groupName");
@@ -136,5 +125,5 @@ public class PlayerSubCommand extends Command {
         } else {
             sender.sendMessage(Component.text("§ePermissions §8» §c'-'"));
         }
-    }
+    }*/
 }
