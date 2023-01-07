@@ -12,10 +12,6 @@ import java.util.UUID;
 
 public interface IDatabase {
 
-    void loadDatabase();
-
-    void unloadDatabase();
-
     PermissionUser getPlayer(UUID uuid);
 
     PermissionGroup getGroup(String name);
@@ -33,8 +29,6 @@ public interface IDatabase {
     Set<PermissionGroup> getAllGroups();
 
     Set<PermissionGroup> getAllLoadedGroups();
-
-    void reloadGroup(PermissionGroup group);
 
     void savePlayer(PermissionUser user);
 
