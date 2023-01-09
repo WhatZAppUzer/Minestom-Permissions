@@ -15,7 +15,8 @@ from the console with "mperms user <username> perm add mpermission.command"
 - [x] '*' permissions added
 
 ## Permissions
-- all permission '*'
-- MainCommand (/mperms) : 'mpermission.command'
-- UserSubCommand (/mperms user) : 'mpermission.command.user'
-- GroupSubCommand (/mperms group) : 'mpermission.command.group'
+- /permissions : 'mpermission.command'
+- /permissions user : 'mpermission.command.user'
+- /permissions group : 'mpermission.command.group'
+- /permissions groups : 'mpermissions.command.groups'
+- /permissions reload : 'mpermissions.command.reload'
