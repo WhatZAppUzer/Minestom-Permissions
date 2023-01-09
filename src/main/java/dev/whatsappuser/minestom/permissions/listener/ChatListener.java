@@ -1,5 +1,8 @@
 package dev.whatsappuser.minestom.permissions.listener;
 
+import dev.whatsappuser.minestom.permissions.PermissionBootstrap;
+import dev.whatsappuser.minestom.permissions.player.PermissionUser;
+import net.kyori.adventure.text.Component;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.player.PlayerChatEvent;
 import org.jetbrains.annotations.NotNull;
@@ -16,9 +19,9 @@ public class ChatListener implements EventListener<PlayerChatEvent> {
 
     @Override
     public @NotNull Result run(@NotNull PlayerChatEvent event) {
-        /*PermissionUser user = PermissionBootstrap.getBootstrap().getPermissionPool().getPlayer(event.getPlayer().getUuid());
+        PermissionUser user = PermissionBootstrap.getBootstrap().getPermissionPool().getUser(event.getPlayer().getUuid());
         var permissionGroup = user.getGroup();
-        event.setChatFormat(playerChatEvent -> Component.text(permissionGroup.getChatFormat() + event.getPlayer().getUsername() + " §8» §r" + playerChatEvent.getMessage()));*/
+        event.setChatFormat(playerChatEvent -> Component.text(permissionGroup.getChatFormat() + event.getPlayer().getUsername() + " §8» §r" + playerChatEvent.getMessage()));
         return Result.SUCCESS;
     }
 }

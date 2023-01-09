@@ -49,26 +49,31 @@ public class PermissionBootstrap extends BootExtension {
         loadDatabase();
 
         this.service.getDatabase().loadGroups();
-        if (! this.service.getDatabase().isDefaultGroupExists()) {
-            getLogger().warn("default group does not exists, creating a new default group.");
-            if (this.service.getDatabase().getGroup("default") != null) {
-                this.service.getDatabase().getGroup("default").setDefault(true);
-                getLogger().info("the group 'default' was changed to default group");
-            } else {
-                PermissionGroup group = new PermissionGroup("default", "§7Spieler §8| §7", "§7S §8| §7", ""
-                        , "§7", "§7Spieler §8| §7", new ArrayList<>(), this.service.getDatabase().getAllLoadedGroups().size() + 1, 10, true);
-                this.service.getDatabase().createGroup(group);
-                this.service.getDatabase().getAllLoadedGroups().add(group);
-                getLogger().info("the default group was created.");
-            }
+         if (! this.service.getDatabase().isDefaultGroupExists()) {
+             getLogger().warn("default group does not exists, creating a new default group.");
+             if (this.service.getDatabase().getGroup("default") != null) {
+                 this.service.getDatabase().getGroup("default").setDefault(true);
+                 getLogger().info("the group 'default' was changed to default group");
+             } else {
+                 PermissionGroup group = new PermissionGroup("default", "§7Spieler §8| §7", "§7S §8| §7", ""
+                         , "§7", "§7Spieler §8| §7", new ArrayList<>(), this.service.getDatabase().getAllLoadedGroups().size() + 1, 10, true);
+                 this.service.getDatabase().createGroup(group);
+                 this.service.getDatabase().getAllLoadedGroups().add(group);
+                 getLogger().info("the default group was created.");
+             }
+         }
+
+        for (PermissionGroup permissionGroup : PERMISSION_GROUPS) {
+            if (permissionGroup.isDefault())
+                this.permissionPool = new PermissionPool(permissionGroup);
         }
 
-
-        getLogger().info("Loaded Groups » " + (this.service.getDatabase()).getAllLoadedGroups().size());
+        getLogger().info("Loaded Groups » " + PERMISSION_GROUPS.size());
+        getLogger().info("Default Group » " + PermissionPool.DEFAULT.getName());
 
         MinecraftServer.getCommandManager().register(new PermissionCommand(provider()));
 
-        MinecraftServer.getGlobalEventHandler().addListener(new PlayerSpawnListener(this.service.getDatabase()));
+        MinecraftServer.getGlobalEventHandler().addListener(new PlayerSpawnListener());
         MinecraftServer.getGlobalEventHandler().addListener(new PlayerDisconnectListener());
         MinecraftServer.getGlobalEventHandler().addListener(new ChatListener());
 

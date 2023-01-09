@@ -26,9 +26,24 @@
         "§7Priority §8» %group_priority%",
         "§7Default §8» %group_isdefault%",
         "§7Permissions §8» §c%permissions%"
-      ]
+      ],
+      "list_groups": "List of all PermissionGroups » "
     },
     "user": {
+      "not-found": "§cThe user was unable to be found",
+      "already-in-group": "§c%player% is already in group %group%",
+      "changed-group": "%player% is now in group %group%",
+      "is-not-in-group": "§c%player% isn't in the group %group%",
+      "no-longer-in-group": "%player% is no longer in group %group%",
+      "has-already-permission": "§c%player% has already the permission %permission%",
+      "successfully-permission-add": "§a%player% has now the permission %permission%",
+      "have-not-permission": "§c%player% doesn't have the permission %permission%",
+      "successfully-permission-remove": "§aremoved the permission %permission% from %player%",
+      "information-header": "§ePermissionUser@%player% §8»",
+      "information-list": [
+        "§eGroup §8» %group%",
+        "§ePermissions §8» §c%permissions%"
+      ]
     }
   }
 }

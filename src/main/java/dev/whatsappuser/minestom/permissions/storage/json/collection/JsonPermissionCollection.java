@@ -28,8 +28,8 @@ public class JsonPermissionCollection extends JsonService implements IDatabase {
     private JsonConfiguration userDocument;
 
     public JsonPermissionCollection() {
-        this.groupFile = getPermissionsFile();
-        this.groupDocument = getGroupsConfig();
+        this.groupFile = new File(MinecraftServer.getExtensionManager().getExtensionFolder() + "/MinePermissions/", "permissions.json");
+        this.groupDocument = JsonConfiguration.loadDocument(this.groupFile);
         File file = new File(MinecraftServer.getExtensionManager().getExtensionFolder() + "/MinePermissions/Users");
         if (! file.isDirectory()) {
             file.mkdirs();
@@ -123,7 +123,7 @@ public class JsonPermissionCollection extends JsonService implements IDatabase {
         Set<PermissionGroup> groups = new HashSet<>();
         for (String key : this.groupDocument.keys()) {
             JsonConfiguration config = this.groupDocument.getDocument(key);
-            groups.add(new PermissionGroup(config.getString("name"), config.getString("prefix"), config.getString("display")
+            groups.add(new PermissionGroup(key, config.getString("prefix"), config.getString("display")
                     , config.getString("suffix"), config.getString("colorcode"), config.getString("chatformat")
                     , config.getObject("permissions", new TypeToken<List<String>>() {
             }.getType()), config.getInt("id"), config.getInt("priority")
@@ -186,7 +186,7 @@ public class JsonPermissionCollection extends JsonService implements IDatabase {
             return null;
 
         JsonConfiguration config = this.groupDocument.getDocument(name);
-        PermissionGroup group = new PermissionGroup(config.getString("name"), config.getString("prefix"), config.getString("display")
+        PermissionGroup group = new PermissionGroup(name, config.getString("prefix"), config.getString("display")
                 , config.getString("suffix"), config.getString("colorcode"), config.getString("chatformat")
                 , config.getObject("permissions", new TypeToken<List<String>>() {
         }.getType()), config.getInt("id"), config.getInt("priority")
@@ -197,7 +197,7 @@ public class JsonPermissionCollection extends JsonService implements IDatabase {
 
     @Override
     public boolean isDefaultGroupExists() {
-        for (PermissionGroup allLoadedGroup : this.getAllLoadedGroups()) {
+        for (PermissionGroup allLoadedGroup : this.getAllGroups()) {
             return allLoadedGroup.isDefault();
         }
         return false;
