@@ -10,10 +10,8 @@ from the console with "mperms user <username> perm add mpermission.command"
 - [x] group specific permissions
 - [x] permission saving
 - [x] update player perms when changing group perms
-- [ ] customizable messages
+- [x] customizable messages
 - [x] mongodb support
-- [ ] permissions tabcomplete
-- [ ] correct arrangement with priority id in the tablist
 - [x] '*' permissions added
 
 ## Permissions
