@@ -8,7 +8,7 @@
 A permission extension for Minestom
 
 To run the commands give yourself the permission "mpermission.command"
-from the console with "mperms user <username> perm add mpermission.command"
+from the console with "mperms user [username] perm add mpermission.command"
   
 ## Progress
 - [x] player specific permissions
