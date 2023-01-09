@@ -3,6 +3,7 @@
     "missing-permissions": "§cYou are not authorized to use this command.",
     "reload-successfully": "§aSuccessfully reloaded all permissions.",
     "only-number": "§cYou must enter a number",
+    "reload": "§eAll groups reloaded.",
     "group": {
       "not-exists": "§cthe group %group% doesn't exist.",
       "successfully-deleted": "§aSuccessfully %group% deleted.",
@@ -26,7 +27,8 @@
         "§7Priority §8» %group_priority%",
         "§7Default §8» %group_isdefault%",
         "§7Permissions §8» §c%permissions%"
-      ]
+      ],
+      "list_groups": "List of all PermissionGroups » "
     },
     "user": {
     }
