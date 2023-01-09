@@ -23,12 +23,12 @@ public class PermissionsConfig {
 
     public void loadConfig() {
         try {
-            if(! FileUtil.doesFileExist(MinecraftServer.getExtensionManager().getExtensionFolder() + "/Permissions"))
-                FileUtil.createDirectory(MinecraftServer.getExtensionManager().getExtensionFolder() + "/Permissions");
+            if (! FileUtil.doesFileExist(MinecraftServer.getExtensionManager().getExtensionFolder() + "/MinePermissions"))
+                FileUtil.createDirectory(MinecraftServer.getExtensionManager().getExtensionFolder() + "/MinePermissions");
 
-            if(!FileUtil.doesFileExist(MinecraftServer.getExtensionManager().getExtensionFolder() + "/Permissions/config.json")) {
+            if (! FileUtil.doesFileExist(MinecraftServer.getExtensionManager().getExtensionFolder() + "/MinePermissions/config.json")) {
                 PermissionBootstrap.getBootstrap().getLogger().info("Config not found, creating one now..");
-                FileUtil.createFile(MinecraftServer.getExtensionManager().getExtensionFolder() + "/Permissions/config.json");
+                FileUtil.createFile(MinecraftServer.getExtensionManager().getExtensionFolder() + "/MinePermissions/config.json");
                 PermissionBootstrap.getBootstrap().getLogger().info("Config is now created.");
             }
         } catch (IOException e) {
@@ -36,7 +36,7 @@ public class PermissionsConfig {
         }
 
         JsonConfiguration document;
-        File file = FileUtil.getFile(MinecraftServer.getExtensionManager().getExtensionFolder() + "/Permissions/config.json");
+        File file = FileUtil.getFile(MinecraftServer.getExtensionManager().getExtensionFolder() + "/MinePermissions/config.json");
         try {
             document = JsonConfiguration.loadDocument(file);
             PermissionBootstrap.getBootstrap().getLogger().info("Config has been loading.");

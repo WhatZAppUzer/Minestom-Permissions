@@ -39,6 +39,7 @@ public class MessageConfig {
     public static String GROUP_SUFFIX_CHANGED;
     public static String GROUP_INFORMATION;
     public static List<String> GROUP_OPTION_INFORMATION;
+    public static String GROUP_LIST_GROUPS;
 
     public MessageConfig() {
         load();
@@ -48,7 +49,7 @@ public class MessageConfig {
 
     //<editor-fold desc="load">
     private void load() {
-        this.file = new File(MinecraftServer.getExtensionManager().getExtensionFolder() + "/Permissions/messages.json");
+        this.file = new File(MinecraftServer.getExtensionManager().getExtensionFolder() + "/MinePermissions/messages.json");
         if(!this.file.exists()) {
             try {
                 this.file.createNewFile();
@@ -88,7 +89,9 @@ public class MessageConfig {
         GROUP_DISPLAY_CHANGED = group.getString("display-changed");
         GROUP_SUFFIX_CHANGED = group.getString("suffix-changed");
         GROUP_INFORMATION = group.getString("information");
-        GROUP_OPTION_INFORMATION = group.getObject("option-information", new TypeToken<List<String>>() {}.getType());
+        GROUP_OPTION_INFORMATION = group.getObject("option-information", new TypeToken<List<String>>() {
+        }.getType());
+        GROUP_LIST_GROUPS = group.getString("list_groups");
     }
     //</editor-fold>
 
@@ -125,6 +128,7 @@ public class MessageConfig {
             options.add("§7Default §8» %group_isdefault%");
             options.add("§7Permissions §8» §c%permissions%");
             group.append("option-information", options);
+            group.append("list_groups", "List of all PermissionGroups » ");
 
             messages.append("group", group);
             this.document.append("messages", messages);

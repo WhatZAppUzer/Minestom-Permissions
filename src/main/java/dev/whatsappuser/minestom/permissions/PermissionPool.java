@@ -63,4 +63,14 @@ public class PermissionPool {
         player.refreshCommands();
     }
 
+    public boolean isRegistered(String group) {
+        return getGroup(group) != null;
+    }
+
+    public void reloadGroups() {
+        PermissionBootstrap.PERMISSION_GROUPS.clear();
+        PermissionBootstrap.getBootstrap().getService().getDatabase().saveGroups();
+        PermissionBootstrap.getBootstrap().getService().getDatabase().loadGroups();
+    }
+
 }
