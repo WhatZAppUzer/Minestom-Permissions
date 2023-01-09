@@ -2,6 +2,7 @@ package dev.whatsappuser.minestom.permissions;
 
 import dev.whatsappuser.minestom.permissions.group.PermissionGroup;
 import dev.whatsappuser.minestom.permissions.player.PermissionUser;
+import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.permission.Permission;
@@ -60,6 +61,7 @@ public class PermissionPool {
         for (String permission : group.getPermissions()) {
             player.getAllPermissions().add(new Permission(permission));
         }
+        player.setDisplayName(Component.text(group.getDisplay() + player.getUsername()));
         player.refreshCommands();
     }
 
@@ -71,6 +73,16 @@ public class PermissionPool {
         PermissionBootstrap.PERMISSION_GROUPS.clear();
         PermissionBootstrap.getBootstrap().getService().getDatabase().saveGroups();
         PermissionBootstrap.getBootstrap().getService().getDatabase().loadGroups();
+    }
+
+    public boolean isPlayerInGroup(PermissionUser user, String group) {
+        return user.getGroup().getName().equalsIgnoreCase(group);
+    }
+
+    public void setPlayerInGroup(PermissionUser user, String group) {
+        var permissionGroup = getGroup(group);
+        user.setGroup(permissionGroup);
+        update(user);
     }
 
 }

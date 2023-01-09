@@ -73,7 +73,7 @@ public class PermissionBootstrap extends BootExtension {
 
         MinecraftServer.getCommandManager().register(new PermissionCommand(provider()));
 
-        MinecraftServer.getGlobalEventHandler().addListener(new PlayerSpawnListener(this.service.getDatabase()));
+        MinecraftServer.getGlobalEventHandler().addListener(new PlayerSpawnListener());
         MinecraftServer.getGlobalEventHandler().addListener(new PlayerDisconnectListener());
         MinecraftServer.getGlobalEventHandler().addListener(new ChatListener());
 

@@ -27,6 +27,7 @@ public class PermissionCommand extends Command {
             sender.sendMessage(Component.text("/mperms group [name] create [default(true:false)]"));
             sender.sendMessage(Component.text("/mperms group [name] delete"));
             sender.sendMessage(Component.text("/mperms group [name] setPriority [priority(int)]"));
+            sender.sendMessage(Component.text("/mperms reload"));
         });
 
         addSubcommand(new GuiSubCommand(provider));

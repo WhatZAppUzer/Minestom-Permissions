@@ -1,5 +1,7 @@
 package dev.whatsappuser.minestom.permissions.listener;
 
+import dev.whatsappuser.minestom.permissions.PermissionBootstrap;
+import dev.whatsappuser.minestom.permissions.player.PermissionUser;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import org.jetbrains.annotations.NotNull;
@@ -17,8 +19,8 @@ public class PlayerDisconnectListener implements EventListener<PlayerDisconnectE
     @Override
     public @NotNull Result run(@NotNull PlayerDisconnectEvent event) {
         var player = event.getPlayer();
-        //PermissionUser permissionUser = PermissionBootstrap.getBootstrap().getPermissionPool().getPlayer(player.getUuid());
-        //PermissionBootstrap.getBootstrap().getDatabase().savePlayer(permissionUser);
+        PermissionUser permissionUser = PermissionBootstrap.getBootstrap().getPermissionPool().getUser(player.getUuid());
+        PermissionBootstrap.getBootstrap().getService().getDatabase().savePlayer(permissionUser);
         return Result.SUCCESS;
     }
 }

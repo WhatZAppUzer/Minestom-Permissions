@@ -41,6 +41,22 @@ public class MessageConfig {
     public static List<String> GROUP_OPTION_INFORMATION;
     public static String GROUP_LIST_GROUPS;
 
+    /**
+     * user's messages
+     */
+
+    public static String USER_NOT_FOUND;
+    public static String USER_ALREADY_IN_GROUP;
+    public static String USER_CHANGED_GROUP;
+    public static String USER_NOT_IN_GROUP;
+    public static String USER_NO_LONGER_IN_GROUP;
+    public static String USER_HAS_ALREADY_PERMISSION;
+    public static String USER_SUCCESSFULLY_PERMISSION_ADD;
+    public static String USER_SUCCESSFULLY_PERMISSION_REMOVED;
+    public static String USER_HAS_NO_PERMISSION;
+    public static String USER_INFORMATION_HEADER;
+    public static List<String> USER_INFORMATION_LIST;
+
     public MessageConfig() {
         load();
 
@@ -50,7 +66,7 @@ public class MessageConfig {
     //<editor-fold desc="load">
     private void load() {
         this.file = new File(MinecraftServer.getExtensionManager().getExtensionFolder() + "/MinePermissions/messages.json");
-        if(!this.file.exists()) {
+        if (! this.file.exists()) {
             try {
                 this.file.createNewFile();
             } catch (IOException e) {
@@ -92,12 +108,26 @@ public class MessageConfig {
         GROUP_OPTION_INFORMATION = group.getObject("option-information", new TypeToken<List<String>>() {
         }.getType());
         GROUP_LIST_GROUPS = group.getString("list_groups");
+
+        var user = messages.getDocument("user");
+        USER_NOT_FOUND = user.getString("not-found");
+        USER_ALREADY_IN_GROUP = user.getString("already-in-group");
+        USER_CHANGED_GROUP = user.getString("changed-group");
+        USER_NOT_IN_GROUP = user.getString("is-not-in-group");
+        USER_NO_LONGER_IN_GROUP = user.getString("no-longer-in-group");
+        USER_HAS_ALREADY_PERMISSION = user.getString("has-already-permission");
+        USER_HAS_NO_PERMISSION = user.getString("have-not-permission");
+        USER_SUCCESSFULLY_PERMISSION_ADD = user.getString("successfully-permission-add");
+        USER_SUCCESSFULLY_PERMISSION_REMOVED = user.getString("successfully-permission-remove");
+        USER_INFORMATION_HEADER = user.getString("information-header");
+        USER_INFORMATION_LIST = user.getObject("information-list", new TypeToken<List<String>>() {
+        }.getType());
     }
     //</editor-fold>
 
     //<editor-fold desc="registerDefaults">
     private void registerDefaults() {
-        if(!isFirstStart()) {
+        if (! isFirstStart()) {
             JsonConfiguration messages = new JsonConfiguration("messages");
             messages.append("missing-permissions", "§cYou are not authorized to use this command.");
             messages.append("reload-successfully", "§aSuccessfully reloaded all permissions.");
@@ -130,7 +160,27 @@ public class MessageConfig {
             group.append("option-information", options);
             group.append("list_groups", "List of all PermissionGroups » ");
 
+
+            var user = new JsonConfiguration("user");
+            user.append("not-found", "§cThe user was unable to be found");
+            user.append("already-in-group", "§c%player% is already in group %group%");
+            user.append("changed-group", "%player% is now in group %group%");
+            user.append("is-not-in-group", "§c%player% isn't in the group %group%");
+            user.append("no-longer-in-group", "%player% is no longer in group %group%");
+            user.append("has-already-permission", "§c%player% has already the permission %permission%");
+            user.append("successfully-permission-add", "§a%player% has now the permission %permission%");
+            user.append("successfully-permission-remove", "§aremoved the permission %permission% from %player%");
+            user.append("have-not-permission", "§c%player% doesn't have the permission %permission%");
+            user.append("information-header", "§ePermissionUser@%player% §8»");
+
+            List<String> userOptions = new ArrayList<>();
+            userOptions.add("§eGroup §8» %group%");
+            userOptions.add("§ePermissions §8» §c%permissions%");
+
+            user.append("information-list", userOptions);
+
             messages.append("group", group);
+            messages.append("user", user);
             this.document.append("messages", messages);
             save();
         }
